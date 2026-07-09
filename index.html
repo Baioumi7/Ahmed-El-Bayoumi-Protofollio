@@ -91,7 +91,6 @@
         .photo-clickable{cursor:pointer;transition:all .3s}
         .photo-clickable:hover{filter:brightness(1.1);transform:scale(1.03)}
 
-        /* === الشات بوت === */
         .cw-trigger{position:fixed;bottom:28px;left:28px;z-index:99999;width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,#e8a838,#d4922e);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 25px rgba(232,168,56,0.4),0 0 0 0 rgba(232,168,56,0.3);transition:all .3s ease;animation:cwPulse 3s infinite}
         .cw-trigger:hover{transform:scale(1.12);box-shadow:0 6px 35px rgba(232,168,56,0.5)}
         .cw-trigger.active{animation:none;transform:rotate(90deg) scale(1);background:#1a1a2a;border:2px solid #2a2a3a;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
@@ -155,7 +154,6 @@
 
 <div id="scroll-progress"></div>
 
-<!-- Lightbox -->
 <div class="lightbox" id="lightbox">
     <button class="lb-btn lb-close" onclick="closeLB()"><span class="iconify" data-icon="lucide:x" data-width="20"></span></button>
     <button class="lb-btn lb-prev" onclick="navLB(-1)"><span class="iconify" data-icon="lucide:chevron-left" data-width="22"></span></button>
@@ -165,7 +163,6 @@
     <div class="lb-counter" id="lb-counter"></div>
 </div>
 
-<!-- Navigation -->
 <nav id="nav" class="fixed top-0 left-0 right-0 z-50 nav-g">
     <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         <a href="#hero" class="flex items-center gap-2">
@@ -316,11 +313,10 @@
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">My <span class="text-orange-500">Journey</span></h2>
             <p class="text-zinc-500 text-sm max-w-lg mx-auto">From factory floors to AI-powered support automation — a visual map of professional growth.</p>
         </div>
-
         <div class="relative">
             <div class="tl-line hidden md:block"></div>
 
-            <!-- Node 1: Education -->
+            <!-- Education -->
             <div class="relative mb-16 md:mb-24">
                 <div class="tl-dot done hidden md:block" style="top:24px"></div>
                 <div class="md:grid md:grid-cols-2 md:gap-16">
@@ -344,7 +340,7 @@
                 </div>
             </div>
 
-            <!-- Node 2: Banaff — Operation Engineer -->
+            <!-- Banaff -->
             <div class="relative mb-16 md:mb-24">
                 <div class="tl-dot done hidden md:block" style="top:24px"></div>
                 <div class="md:grid md:grid-cols-2 md:gap-16">
@@ -368,7 +364,7 @@
                 </div>
             </div>
 
-            <!-- Node 3: ITI -->
+            <!-- ITI -->
             <div class="relative mb-16 md:mb-24">
                 <div class="tl-dot done hidden md:block" style="top:24px"></div>
                 <div class="md:grid md:grid-cols-2 md:gap-16">
@@ -392,7 +388,7 @@
                 </div>
             </div>
 
-            <!-- Node 4: Fruity — Expert Sales & Market Analyst -->
+            <!-- Fruity -->
             <div class="relative mb-16 md:mb-24">
                 <div class="tl-dot done hidden md:block" style="top:24px"></div>
                 <div class="md:grid md:grid-cols-2 md:gap-16">
@@ -416,7 +412,7 @@
                 </div>
             </div>
 
-            <!-- Node 5: MOS — Active -->
+            <!-- MOS -->
             <div class="relative mb-16 md:mb-24">
                 <div class="tl-dot hidden md:block" style="top:24px;animation:pulse-orange 2s infinite"></div>
                 <div class="md:grid md:grid-cols-2 md:gap-16">
@@ -441,7 +437,7 @@
                 </div>
             </div>
 
-            <!-- Node 6: Current — Riyadh Parking -->
+            <!-- Riyadh Parking -->
             <div class="relative">
                 <div class="tl-dot hidden md:block" style="top:24px;animation:pulse-orange 2s infinite"></div>
                 <div class="md:grid md:grid-cols-2 md:gap-16">
@@ -719,7 +715,7 @@
 </div>
 
 <script>
-  /* ==================== الشات بوت ==================== */
+  /* ==================== الشات بوت — نسخة محسنة ==================== */
   const WEBHOOK = 'https://1e68495d.kube-ops.com/webhook/8dfd56c0-f948-4c4b-8a13-59364b35ea5a/chat';
   const trigger = document.getElementById('cwTrigger');
   const win = document.getElementById('cwWin');
@@ -730,71 +726,299 @@
   const sendBtn = document.getElementById('cwSend');
   const typing = document.getElementById('cwTyping');
   const hdr = document.getElementById('cwHdr');
+
   let isOpen = false;
-  let sessionId = localStorage.getItem("chatSessionId");
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    localStorage.setItem("chatSessionId", sessionId);
-  }
+  /* ★ نولّد sessionId من الأول — ده بيحل مشكلة الـ Key فارغ */
+  let sessionId = 'web_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+
   const now = new Date();
   const tStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   document.getElementById('cwWelcomeTime').textContent = tStr;
   document.getElementById('cwWelcomeTime2').textContent = tStr;
-  function cwToggle(){isOpen=!isOpen;trigger.classList.toggle('active',isOpen);win.classList.toggle('open',isOpen);if(isOpen){tip.style.display='none';notif.style.display='none';setTimeout(()=>input.focus(),400)}}
-  trigger.addEventListener('click',cwToggle);
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();cwSend()}});
-  function cwTime(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')}
-  function cwAddUser(text){const div=document.createElement('div');div.className='cw-bubble-user';div.innerHTML=`<div class="cw-bubble">${cwEscape(text)}</div><div class="cw-time">${cwTime()}</div>`;msgs.insertBefore(div,typing);cwScroll()}
-  function cwAddBot(text){const div=document.createElement('div');div.className='cw-bubble-bot';div.innerHTML=`<div class="cw-bubble">${text}</div><div class="cw-time">${cwTime()}</div>`;msgs.insertBefore(div,typing);cwScroll()}
-  function cwScroll(){requestAnimationFrame(()=>{msgs.scrollTop=msgs.scrollHeight})}
-  function cwEscape(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
-  async function cwSend(){const text=input.value.trim();if(!text)return;input.value='';sendBtn.disabled=true;cwAddUser(text);typing.classList.add('show');cwScroll();try{const body={action:"sendMessage",chatInput:text,sessionId:sessionId};const res=await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();typing.classList.remove('show');let reply='';if(typeof data==='string')reply=data;else if(data.output)reply=typeof data.output==='string'?data.output:JSON.stringify(data.output);else if(data.message)reply=data.message;else if(data.reply)reply=data.reply;else if(data.response)reply=data.response;else if(data.text)reply=data.text;else if(data.data&&typeof data.data==='string')reply=data.data;else reply=JSON.stringify(data,null,2);reply=cwFormatReply(reply);cwAddBot(reply)}catch(err){typing.classList.remove('show');cwAddBot('عذراً، حدث خطأ في الاتصال. حاول مرة أخرى.');console.error('Chat error:',err)}sendBtn.disabled=false;input.focus()}
-  function cwFormatReply(text){if(typeof text!=='string')return text;let html=cwEscape(text);html=html.replace(/\n/g,'<br>');html=html.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');html=html.replace(/`(.*?)`/g,'<code style="background:#252535;padding:0.1em 0.4em;border-radius:4px;font-size:0.85em;">$1</code>');return html}
-  function cwReset(){const children=Array.from(msgs.children);children.forEach(c=>{if(!c.classList.contains('cw-typing')&&!c.querySelector('#cwWelcomeTime')&&!c.querySelector('#cwWelcomeTime2'))c.remove()});sessionId=null}
-  setTimeout(()=>{tip.style.opacity='0';tip.style.transition='opacity 0.3s';setTimeout(()=>tip.style.display='none',300)},5000);
-  let isDrag=false,dX,dY,wX,wY;hdr.addEventListener('mousedown',cwDragStart);hdr.addEventListener('touchstart',cwDragStart,{passive:false});
-  function cwDragStart(e){if(e.target.closest('button'))return;isDrag=true;const p=e.touches?e.touches[0]:e;const r=win.getBoundingClientRect();dX=p.clientX;dY=p.clientY;wX=r.left;wY=r.top;win.style.bottom='auto';win.style.right='auto';win.style.left=wX+'px';win.style.top=wY+'px';document.addEventListener('mousemove',cwDragMove);document.addEventListener('mouseup',cwDragEnd);document.addEventListener('touchmove',cwDragMove,{passive:false});document.addEventListener('touchend',cwDragEnd)}
-  function cwDragMove(e){if(!isDrag)return;e.preventDefault();const p=e.touches?e.touches[0]:e;win.style.left=(wX+p.clientX-dX)+'px';win.style.top=(wY+p.clientY-dY)+'px'}
-  function cwDragEnd(){isDrag=false;document.removeEventListener('mousemove',cwDragMove);document.removeEventListener('mouseup',cwDragEnd);document.removeEventListener('touchmove',cwDragMove);document.removeEventListener('touchend',cwDragEnd)}
-  function openChat(){if(!isOpen)cwToggle()}
+
+  function cwToggle() {
+    isOpen = !isOpen;
+    trigger.classList.toggle('active', isOpen);
+    win.classList.toggle('open', isOpen);
+    if (isOpen) {
+      tip.style.display = 'none';
+      notif.style.display = 'none';
+      setTimeout(() => input.focus(), 400);
+    }
+  }
+  trigger.addEventListener('click', cwToggle);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); cwSend(); } });
+
+  function cwTime() {
+    const d = new Date();
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  }
+
+  function cwAddUser(text) {
+    const div = document.createElement('div');
+    div.className = 'cw-bubble-user';
+    div.innerHTML = '<div class="cw-bubble">' + cwEscape(text) + '</div><div class="cw-time">' + cwTime() + '</div>';
+    msgs.insertBefore(div, typing);
+    cwScroll();
+  }
+
+  function cwAddBot(text) {
+    const div = document.createElement('div');
+    div.className = 'cw-bubble-bot';
+    div.innerHTML = '<div class="cw-bubble">' + text + '</div><div class="cw-time">' + cwTime() + '</div>';
+    msgs.insertBefore(div, typing);
+    cwScroll();
+  }
+
+  function cwScroll() {
+    requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
+  }
+
+  function cwEscape(t) {
+    const d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  /* ★ استخراج الرد بذكاء — بيتعامل مع كل أشكال رد n8n */
+  function cwExtractReply(data) {
+    if (!data || typeof data === 'undefined') return 'No response received.';
+
+    // لو الرد نص مباشر
+    if (typeof data === 'string') return data;
+
+    // لو في error من n8n
+    if (data.error) return 'Error: ' + (typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
+
+    // أشكال مختلفة لردود n8n
+    const keys = ['output', 'message', 'reply', 'response', 'text', 'answer', 'result', 'content'];
+    for (const k of keys) {
+      if (data[k]) {
+        return typeof data[k] === 'string' ? data[k] : JSON.stringify(data[k], null, 2);
+      }
+    }
+
+    // لو في data مدمج
+    if (data.data) {
+      if (typeof data.data === 'string') return data.data;
+      // لو data.data مصفوفة خذ أول عنصر
+      if (Array.isArray(data.data) && data.data.length > 0) {
+        const first = data.data[0];
+        if (typeof first === 'string') return first;
+        if (first.output) return typeof first.output === 'string' ? first.output : JSON.stringify(first.output, null, 2);
+        if (first.message) return typeof first.message === 'string' ? first.message : JSON.stringify(first.message, null, 2);
+        if (first.text) return typeof first.text === 'string' ? first.text : JSON.stringify(first.text, null, 2);
+        return JSON.stringify(first, null, 2);
+      }
+      return JSON.stringify(data.data, null, 2);
+    }
+
+    // آخر محاولة: دور على أي قيمة نصية في الـ object
+    for (const val of Object.values(data)) {
+      if (typeof val === 'string' && val.trim().length > 2 && val !== sessionId) return val;
+    }
+
+    return JSON.stringify(data, null, 2);
+  }
+
+  async function cwSend() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    sendBtn.disabled = true;
+    cwAddUser(text);
+
+    typing.classList.add('show');
+    cwScroll();
+
+    try {
+      /* ★ دايماً نرسل sessionId — حتى في أول رسالة */
+      const body = {
+        message: text,
+        sessionId: sessionId
+      };
+
+      const res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+
+      /* ★ حدّث الـ sessionId لو الـ workflow رجّع واحد جديد */
+      if (data.sessionId && data.sessionId !== sessionId) {
+        sessionId = data.sessionId;
+      }
+
+      typing.classList.remove('show');
+
+      const reply = cwFormatReply(cwExtractReply(data));
+      cwAddBot(reply);
+
+    } catch (err) {
+      typing.classList.remove('show');
+      cwAddBot('عذراً، حدث خطأ في الاتصال. حاول مرة أخرى.');
+      console.error('Chat error:', err);
+    }
+
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  function cwFormatReply(text) {
+    if (typeof text !== 'string') return text;
+    let html = cwEscape(text);
+    html = html.replace(/\n/g, '<br>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/`(.*?)`/g, '<code style="background:#252535;padding:0.1em 0.4em;border-radius:4px;font-size:0.85em;">$1</code>');
+    return html;
+  }
+
+  function cwReset() {
+    const children = Array.from(msgs.children);
+    children.forEach(c => {
+      if (!c.classList.contains('cw-typing') && !c.querySelector('#cwWelcomeTime') && !c.querySelector('#cwWelcomeTime2')) {
+        c.remove();
+      }
+    });
+    /* ★ ولّد sessionId جديد عند مسح المحادثة */
+    sessionId = 'web_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+  }
+
+  setTimeout(() => {
+    tip.style.opacity = '0';
+    tip.style.transition = 'opacity 0.3s';
+    setTimeout(() => tip.style.display = 'none', 300);
+  }, 5000);
+
+  /* سحب النافذة */
+  let isDrag = false, dX, dY, wX, wY;
+  hdr.addEventListener('mousedown', cwDragStart);
+  hdr.addEventListener('touchstart', cwDragStart, { passive: false });
+
+  function cwDragStart(e) {
+    if (e.target.closest('button')) return;
+    isDrag = true;
+    const p = e.touches ? e.touches[0] : e;
+    const r = win.getBoundingClientRect();
+    dX = p.clientX; dY = p.clientY;
+    wX = r.left; wY = r.top;
+    win.style.bottom = 'auto';
+    win.style.right = 'auto';
+    win.style.left = wX + 'px';
+    win.style.top = wY + 'px';
+    document.addEventListener('mousemove', cwDragMove);
+    document.addEventListener('mouseup', cwDragEnd);
+    document.addEventListener('touchmove', cwDragMove, { passive: false });
+    document.addEventListener('touchend', cwDragEnd);
+  }
+
+  function cwDragMove(e) {
+    if (!isDrag) return;
+    e.preventDefault();
+    const p = e.touches ? e.touches[0] : e;
+    win.style.left = (wX + p.clientX - dX) + 'px';
+    win.style.top = (wY + p.clientY - dY) + 'px';
+  }
+
+  function cwDragEnd() {
+    isDrag = false;
+    document.removeEventListener('mousemove', cwDragMove);
+    document.removeEventListener('mouseup', cwDragEnd);
+    document.removeEventListener('touchmove', cwDragMove);
+    document.removeEventListener('touchend', cwDragEnd);
+  }
+
+  function openChat() { if (!isOpen) cwToggle(); }
 
   /* ==================== البورتفوليو ==================== */
-  const titles=['Application Support Engineer','Data Engineer','AI Automation Builder','Incident Resolver','Workflow Architect','Operations Engineer','Market Analyst'];
-  let ti=0,ci=0,del=false;
-  const typed=document.getElementById('typed');
-  function typeLoop(){const cur=titles[ti];if(!del){typed.textContent=cur.substring(0,++ci);if(ci===cur.length){del=true;setTimeout(typeLoop,2000);return}setTimeout(typeLoop,60)}else{typed.textContent=cur.substring(0,--ci);if(ci===0){del=false;ti=(ti+1)%titles.length;setTimeout(typeLoop,400);return}setTimeout(typeLoop,30)}}
+  const titles = ['Application Support Engineer','Data Engineer','AI Automation Builder','Incident Resolver','Workflow Architect','Operations Engineer','Market Analyst'];
+  let ti = 0, ci = 0, del = false;
+  const typed = document.getElementById('typed');
+  function typeLoop() {
+    const cur = titles[ti];
+    if (!del) {
+      typed.textContent = cur.substring(0, ++ci);
+      if (ci === cur.length) { del = true; setTimeout(typeLoop, 2000); return; }
+      setTimeout(typeLoop, 60);
+    } else {
+      typed.textContent = cur.substring(0, --ci);
+      if (ci === 0) { del = false; ti = (ti + 1) % titles.length; setTimeout(typeLoop, 400); return; }
+      setTimeout(typeLoop, 30);
+    }
+  }
   typeLoop();
 
-  function animateCounters(){document.querySelectorAll('.sn').forEach(el=>{const target=+el.dataset.t;let current=0;const step=Math.max(1,Math.ceil(target/40));const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer)}el.textContent=current},30)})}
-  setTimeout(animateCounters,1000);
+  function animateCounters() {
+    document.querySelectorAll('.sn').forEach(el => {
+      const target = +el.dataset.t;
+      let current = 0;
+      const step = Math.max(1, Math.ceil(target / 40));
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = current;
+      }, 30);
+    });
+  }
+  setTimeout(animateCounters, 1000);
 
-  window.addEventListener('scroll',()=>{const h=document.documentElement;const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;document.getElementById('scroll-progress').style.width=pct+'%'});
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById('scroll-progress').style.width = pct + '%';
+  });
 
-  const aosEls=document.querySelectorAll('.aos');
-  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
-  aosEls.forEach(el=>obs.observe(el));
+  const aosEls = document.querySelectorAll('.aos');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  aosEls.forEach(el => obs.observe(el));
 
-  const sections=document.querySelectorAll('section[id]');
-  const navLinks=document.querySelectorAll('.nl[data-s]');
-  window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-200)cur=s.id});navLinks.forEach(l=>{l.classList.toggle('act',l.dataset.s===cur)})});
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nl[data-s]');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 200) cur = s.id; });
+    navLinks.forEach(l => { l.classList.toggle('act', l.dataset.s === cur); });
+  });
 
-  const mobBtn=document.getElementById('mob-btn');
-  const mobMenu=document.getElementById('mob-menu');
-  mobBtn.addEventListener('click',()=>{mobMenu.classList.toggle('hidden')});
-  mobMenu.querySelectorAll('a').forEach(a=>{a.addEventListener('click',()=>mobMenu.classList.add('hidden'))});
+  const mobBtn = document.getElementById('mob-btn');
+  const mobMenu = document.getElementById('mob-menu');
+  mobBtn.addEventListener('click', () => { mobMenu.classList.toggle('hidden'); });
+  mobMenu.querySelectorAll('a').forEach(a => { a.addEventListener('click', () => mobMenu.classList.add('hidden')); });
 
-  const galleryImages=['https://z-cdn-media.chatglm.cn/files/02c81a45-7699-4de6-a4c9-4a814d359461.jpeg?auth_key=1882772883-befc6ed4430146689f171f021139856d-0-d4e8643d59a074b2190b99b2b7583aad'];
-  let lbIdx=0;
-  const lb=document.getElementById('lightbox');
-  const lbImg=document.getElementById('lb-img');
-  const lbCounter=document.getElementById('lb-counter');
-  const lbDots=document.getElementById('lb-dots');
-  galleryImages.forEach((_,i)=>{const dot=document.createElement('div');dot.className='lb-dot'+(i===0?' active':'');dot.onclick=()=>openLB(i);lbDots.appendChild(dot)});
-  function openLB(i){lbIdx=i;lbImg.src=galleryImages[lbIdx];lbCounter.textContent=(lbIdx+1)+' / '+galleryImages.length;lbDots.querySelectorAll('.lb-dot').forEach((d,j)=>d.classList.toggle('active',j===lbIdx));lb.classList.add('open');document.body.style.overflow='hidden'}
-  function closeLB(){lb.classList.remove('open');document.body.style.overflow=''}
-  function navLB(dir){lbIdx=(lbIdx+dir+galleryImages.length)%galleryImages.length;openLB(lbIdx)}
-  lb.addEventListener('click',e=>{if(e.target===lb)closeLB()});
-  document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowLeft')navLB(-1);if(e.key==='ArrowRight')navLB(1)});
+  const galleryImages = ['https://z-cdn-media.chatglm.cn/files/02c81a45-7699-4de6-a4c9-4a814d359461.jpeg?auth_key=1882772883-befc6ed4430146689f171f021139856d-0-d4e8643d59a074b2190b99b2b7583aad'];
+  let lbIdx = 0;
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbCounter = document.getElementById('lb-counter');
+  const lbDots = document.getElementById('lb-dots');
+  galleryImages.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'lb-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => openLB(i);
+    lbDots.appendChild(dot);
+  });
+  function openLB(i) {
+    lbIdx = i;
+    lbImg.src = galleryImages[lbIdx];
+    lbCounter.textContent = (lbIdx + 1) + ' / ' + galleryImages.length;
+    lbDots.querySelectorAll('.lb-dot').forEach((d, j) => d.classList.toggle('active', j === lbIdx));
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+  function navLB(dir) { lbIdx = (lbIdx + dir + galleryImages.length) % galleryImages.length; openLB(lbIdx); }
+  lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLB();
+    if (e.key === 'ArrowLeft') navLB(-1);
+    if (e.key === 'ArrowRight') navLB(1);
+  });
 </script>
 </body>
 </html>
