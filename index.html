@@ -731,7 +731,11 @@
   const typing = document.getElementById('cwTyping');
   const hdr = document.getElementById('cwHdr');
   let isOpen = false;
-  let sessionId = null;
+  let sessionId = localStorage.getItem("chatSessionId");
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem("chatSessionId", sessionId);
+  }
   const now = new Date();
   const tStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   document.getElementById('cwWelcomeTime').textContent = tStr;
@@ -744,7 +748,7 @@
   function cwAddBot(text){const div=document.createElement('div');div.className='cw-bubble-bot';div.innerHTML=`<div class="cw-bubble">${text}</div><div class="cw-time">${cwTime()}</div>`;msgs.insertBefore(div,typing);cwScroll()}
   function cwScroll(){requestAnimationFrame(()=>{msgs.scrollTop=msgs.scrollHeight})}
   function cwEscape(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
-  async function cwSend(){const text=input.value.trim();if(!text)return;input.value='';sendBtn.disabled=true;cwAddUser(text);typing.classList.add('show');cwScroll();try{const body={message:text};if(sessionId)body.sessionId=sessionId;const res=await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(data.sessionId)sessionId=data.sessionId;typing.classList.remove('show');let reply='';if(typeof data==='string')reply=data;else if(data.output)reply=typeof data.output==='string'?data.output:JSON.stringify(data.output);else if(data.message)reply=data.message;else if(data.reply)reply=data.reply;else if(data.response)reply=data.response;else if(data.text)reply=data.text;else if(data.data&&typeof data.data==='string')reply=data.data;else reply=JSON.stringify(data,null,2);reply=cwFormatReply(reply);cwAddBot(reply)}catch(err){typing.classList.remove('show');cwAddBot('عذراً، حدث خطأ في الاتصال. حاول مرة أخرى.');console.error('Chat error:',err)}sendBtn.disabled=false;input.focus()}
+  async function cwSend(){const text=input.value.trim();if(!text)return;input.value='';sendBtn.disabled=true;cwAddUser(text);typing.classList.add('show');cwScroll();try{const body={action:"sendMessage",chatInput:text,sessionId:sessionId};const res=await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();typing.classList.remove('show');let reply='';if(typeof data==='string')reply=data;else if(data.output)reply=typeof data.output==='string'?data.output:JSON.stringify(data.output);else if(data.message)reply=data.message;else if(data.reply)reply=data.reply;else if(data.response)reply=data.response;else if(data.text)reply=data.text;else if(data.data&&typeof data.data==='string')reply=data.data;else reply=JSON.stringify(data,null,2);reply=cwFormatReply(reply);cwAddBot(reply)}catch(err){typing.classList.remove('show');cwAddBot('عذراً، حدث خطأ في الاتصال. حاول مرة أخرى.');console.error('Chat error:',err)}sendBtn.disabled=false;input.focus()}
   function cwFormatReply(text){if(typeof text!=='string')return text;let html=cwEscape(text);html=html.replace(/\n/g,'<br>');html=html.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');html=html.replace(/`(.*?)`/g,'<code style="background:#252535;padding:0.1em 0.4em;border-radius:4px;font-size:0.85em;">$1</code>');return html}
   function cwReset(){const children=Array.from(msgs.children);children.forEach(c=>{if(!c.classList.contains('cw-typing')&&!c.querySelector('#cwWelcomeTime')&&!c.querySelector('#cwWelcomeTime2'))c.remove()});sessionId=null}
   setTimeout(()=>{tip.style.opacity='0';tip.style.transition='opacity 0.3s';setTimeout(()=>tip.style.display='none',300)},5000);
